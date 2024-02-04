@@ -1,0 +1,11 @@
+.{
+    .name = "zlock",
+    .version = "0.0.0",
+    .dependencies = .{
+        .raylib = .{ .path = "lib/raylib" },
+        .ziglua = .{ .path = "lib/ziglua" },
+    },
+    .paths = .{
+        "",
+    },
+}
