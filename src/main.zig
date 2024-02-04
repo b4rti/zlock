@@ -4,8 +4,23 @@ const lua = @import("ziglua");
 
 const Lua = lua.Lua;
 
-fn helloZig(_: *lua.Lua) i32 {
-    std.debug.print("Hello from Zig\n", .{});
+fn registerAsset(ctx: *lua.Lua) i32 {
+    if (!ctx.isTable(-1)) {
+        std.debug.print("ERROR: non-table passed to registerAsset!\n", .{});
+    }
+    _ = ctx.getField(-1, "name");
+    const name = ctx.toString(-1) catch return -1;
+    ctx.pop(1);
+    _ = ctx.getField(-1, "description");
+    const description = ctx.toString(-1) catch return -2;
+    ctx.pop(1);
+    _ = ctx.getField(-1, "version");
+    const version = ctx.toString(-1) catch return -3;
+    ctx.pop(1);
+
+    std.debug.print("Loading: {s} ver.{s}\n", .{ name, version });
+    std.debug.print("Info: {s}\n", .{description});
+
     return 0;
 }
 
@@ -17,12 +32,11 @@ pub fn main() anyerror!void {
     defer instance.deinit();
 
     instance.open(.{ .base = true });
-    instance.pushFunction(lua.wrap(helloZig));
-    instance.setGlobal("helloZig");
+    instance.pushFunction(lua.wrap(registerAsset));
+    instance.setGlobal("registerAsset");
 
-    try instance.doFile("assets/test/hello.lua");
-    _ = try instance.getGlobal("helloLua");
-    instance.call(0, 0);
+    try instance.doFile("assets/core/asset.lua");
+
     _ = instance.pop(1);
 
     ray.InitWindow(1024, 768, "Zlock 0.0.1");
