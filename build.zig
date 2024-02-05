@@ -19,6 +19,7 @@ pub fn build(b: *std.Build) void {
     const ziglua = b.dependency("ziglua", .{
         .target = target,
         .optimize = optimize,
+        .lang = .lua54,
     });
 
     exe.linkLibC();

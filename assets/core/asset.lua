@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 
 -- Asset Class
 CoreAsset = {
@@ -6,6 +7,7 @@ CoreAsset = {
     version = '0.0.1',
 }
 registerAsset(CoreAsset)
+
 
 -- Handler Classes
 CorePlayerHandler = {
@@ -22,10 +24,10 @@ CorePlayerHandler = {
         'playerHurt',
     },
 }
-
 function CorePlayerHandler.handleEvent(event)
 end
--- registerHandler(CorePlayerHandler)
+registerHandler(CorePlayerHandler)
+
 
 CoreMobHandler = {
     events = {
@@ -41,28 +43,72 @@ CoreMobHandler = {
 }
 function CoreMobHandler.handleEvent(event)
 end
--- registerHandler(CoreMobHandler)
+registerHandler(CoreMobHandler)
+
 
 -- Block Classes
-TestBlock = {
+CoreTestBlock = {
     name = 'testBlock',
+    id = 'core:testBlock',
     description = 'A test block.',
     duribility = 10,
     textures = {
         -- default
-        all = '',
+        all = 'defaultTexture',
         -- overwrites
-        left = '',
-        right = '',
-        front = '',
-        back = '',
-        top = '',
-        bottom = '',
+        left = 'leftTexture',
+        right = 'rightTexture',
+        front = 'frontTexture',
+        back = 'backTexture',
+        top = 'topTexture',
+        bottom = 'bottomTexture',
     },
     sounds = {
         step = {'', '', ''},
         place = {'', '', ''},
         breake = {'', '', ''},
     },
+    events = {
+        'blockPlace',
+        'blockHit',
+        'blockBreak',
+        'blockStep',
+        'blockInteract',
+    },
 }
--- registerBlock(TestBlock)
+function CoreTestBlock.handleEvents(event)
+end
+registerBlock(CoreTestBlock)
+
+
+-- Structure Classes
+CoreTestStructure = {
+    name = "testStructure",
+    description = "A test structure",
+    mappings = {
+        X = 'core:testBlock',
+    },
+    structure = {
+        {
+            {'X', 'X', 'X'},
+            {'X', 'X', 'X'},
+            {'X', 'X', 'X'},
+        },
+        {
+            {'X', 'X', 'X'},
+            {'X', 'X', 'X'},
+            {'X', 'X', 'X'},
+        },
+        {
+            {'X', 'X', 'X'},
+            {'X', 'X', 'X'},
+            {'X', 'X', 'X'},
+        },
+    },
+    events = {
+        'structureCreate',
+        'structureEnter',
+        'structureExit',
+    },
+}
+registerStructure(CoreTestStructure)
