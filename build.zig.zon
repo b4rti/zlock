@@ -4,6 +4,7 @@
     .dependencies = .{
         .raylib = .{ .path = "lib/raylib" },
         .ziglua = .{ .path = "lib/ziglua" },
+        .zware = .{ .path = "lib/zware" },
     },
     .paths = .{
         "",

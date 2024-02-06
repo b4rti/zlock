@@ -1,0 +1,91 @@
+name: zware tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  source-code-tests:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: 0.11.0
+      - run: zig build unittest
+  testsuite:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: 0.11.0
+      - name: Run testsuite
+        run: zig build testsuite
+  parsecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: 0.11.0
+      - name: Build parsecheck
+        working-directory: ./test/parsecheck
+        run: zig build --prefix ./
+      - name: Run parse check
+        run: test/parsecheck/bin/parsecheck test/testsuite-generated
+  build_interface:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: 0.11.0
+      - name: Build interface
+        working-directory: ./test/interface
+        run: zig build
+  build-zware-gen:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: 0.11.0
+      - name: Build zware-gen
+        working-directory: ./tools/zware-gen
+        run: zig build
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: 0.11.0
+      - run: zig fmt --check src/*.zig
+  fib:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: 0.11.0
+      - name: Build fib
+        working-directory: ./examples/fib
+        run: zig build

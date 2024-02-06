@@ -64,9 +64,9 @@ CoreTestBlock = {
         bottom = 'bottomTexture',
     },
     sounds = {
-        step = {'', '', ''},
-        place = {'', '', ''},
-        breake = {'', '', ''},
+        stepping = {'step1.ogg', 'step2.ogg', 'step3.ogg'},
+        placing = {'place1.ogg', 'place2.ogg', 'place3.ogg'},
+        breaking = {'break1.ogg', 'break2.ogg', 'break3.ogg'},
     },
     events = {
         'blockPlace',

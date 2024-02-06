@@ -22,9 +22,15 @@ pub fn build(b: *std.Build) void {
         .lang = .lua54,
     });
 
+    const zware = b.dependency("zware", .{
+        .target = target,
+        .optimize = optimize,
+    });
+
     exe.linkLibC();
     exe.linkLibrary(raylib.artifact("raylib"));
     exe.root_module.addImport("ziglua", ziglua.module("ziglua"));
+    exe.linkLibrary(zware.artifact("zware"));
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);

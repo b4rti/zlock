@@ -4,7 +4,7 @@ const lua = @import("ziglua");
 
 const Lua = lua.Lua;
 
-fn registerAsset(ctx: *lua.Lua) i32 {
+fn registerAsset(ctx: *Lua) i32 {
     _ = ctx.getField(-1, "name");
     const name = ctx.toString(-1) catch return -1;
     ctx.pop(1);
@@ -21,7 +21,7 @@ fn registerAsset(ctx: *lua.Lua) i32 {
     return 0;
 }
 
-fn registerHandler(ctx: *lua.Lua) i32 {
+fn registerHandler(ctx: *Lua) i32 {
     std.debug.print("HANDLER:\n", .{});
 
     _ = ctx.getField(-1, "events");
@@ -29,8 +29,8 @@ fn registerHandler(ctx: *lua.Lua) i32 {
 
     std.debug.print("   Events({}):\n", .{event_count});
     for (0..event_count) |i| {
-        const lua_index: i32 = @as(i32, @intCast(i)) + 1;
-        ctx.pushInteger(lua_index);
+        const index: i32 = @as(i32, @intCast(i)) + 1;
+        ctx.pushInteger(index);
         _ = ctx.getTable(-2);
         const event_name = ctx.toString(-1) catch return -1;
         ctx.pop(1);
@@ -40,7 +40,7 @@ fn registerHandler(ctx: *lua.Lua) i32 {
     return 0;
 }
 
-fn registerBlock(ctx: *lua.Lua) i32 {
+fn registerBlock(ctx: *Lua) i32 {
     _ = ctx.getField(-1, "name");
     const name = ctx.toString(-1) catch return -1;
     std.debug.print("BLOCK: {s}\n", .{name});
@@ -96,13 +96,57 @@ fn registerBlock(ctx: *lua.Lua) i32 {
 
     ctx.pop(1);
 
+    _ = ctx.getField(-1, "sounds");
+    std.debug.print("   Sounds:\n", .{});
+
+    _ = ctx.getField(-1, "stepping");
+    const stepping_count = ctx.rawLen(-1);
+    std.debug.print("       stepping({}):\n", .{stepping_count});
+    for (0..stepping_count) |i| {
+        const index: i32 = @as(i32, @intCast(i)) + 1;
+        ctx.pushInteger(index);
+        _ = ctx.getTable(-2);
+        const event_name = ctx.toString(-1) catch return -1;
+        ctx.pop(1);
+        std.debug.print("           {s}\n", .{event_name});
+    }
+    ctx.pop(1);
+
+    _ = ctx.getField(-1, "placing");
+    const placing_count = ctx.rawLen(-1);
+    std.debug.print("       placing({}):\n", .{placing_count});
+    for (0..placing_count) |i| {
+        const index: i32 = @as(i32, @intCast(i)) + 1;
+        ctx.pushInteger(index);
+        _ = ctx.getTable(-2);
+        const event_name = ctx.toString(-1) catch return -1;
+        ctx.pop(1);
+        std.debug.print("           {s}\n", .{event_name});
+    }
+    ctx.pop(1);
+
+    _ = ctx.getField(-1, "breaking");
+    const breaking_count = ctx.rawLen(-1);
+    std.debug.print("       breaking({}):\n", .{breaking_count});
+    for (0..breaking_count) |i| {
+        const index: i32 = @as(i32, @intCast(i)) + 1;
+        ctx.pushInteger(index);
+        _ = ctx.getTable(-2);
+        const event_name = ctx.toString(-1) catch return -1;
+        ctx.pop(1);
+        std.debug.print("           {s}\n", .{event_name});
+    }
+    ctx.pop(1);
+
+    ctx.pop(1);
+
     _ = ctx.getField(-1, "events");
     const event_count = ctx.rawLen(-1);
 
     std.debug.print("   Events({}):\n", .{event_count});
     for (0..event_count) |i| {
-        const lua_index: i32 = @as(i32, @intCast(i)) + 1;
-        ctx.pushInteger(lua_index);
+        const index: i32 = @as(i32, @intCast(i)) + 1;
+        ctx.pushInteger(index);
         _ = ctx.getTable(-2);
         const event_name = ctx.toString(-1) catch return -1;
         ctx.pop(1);
@@ -112,7 +156,7 @@ fn registerBlock(ctx: *lua.Lua) i32 {
     return 0;
 }
 
-fn registerStructure(ctx: *lua.Lua) i32 {
+fn registerStructure(ctx: *Lua) i32 {
     _ = ctx.getField(-1, "name");
     const name = ctx.toString(-1) catch return -1;
     std.debug.print("STRUCTURE: {s}\n", .{name});
@@ -137,18 +181,32 @@ fn registerStructure(ctx: *lua.Lua) i32 {
     }
     ctx.pop(1);
 
+    // _ = ctx.getField(-1, "structure");
+    // const layer_count = ctx.rawLen(-1);
+
+    // std.debug.print("   Structure:\n", .{});
+    // for (0..layer_count) |i| {
+    //     const index: i32 = @as(i32, @intCast(i)) + 1;
+    //     ctx.pushInteger(index);
+    //     _ = ctx.getTable(-2);
+
+    //     ctx.pop(1);
+    // }
+    // ctx.pop(1);
+
     _ = ctx.getField(-1, "events");
     const event_count = ctx.rawLen(-1);
 
     std.debug.print("   Events({}):\n", .{event_count});
     for (0..event_count) |i| {
-        const lua_index: i32 = @as(i32, @intCast(i)) + 1;
-        ctx.pushInteger(lua_index);
+        const index: i32 = @as(i32, @intCast(i)) + 1;
+        ctx.pushInteger(index);
         _ = ctx.getTable(-2);
         const event_name = ctx.toString(-1) catch return -1;
         ctx.pop(1);
         std.debug.print("       {s}\n", .{event_name});
     }
+    ctx.pop(1);
 
     return 0;
 }
@@ -161,14 +219,10 @@ pub fn main() anyerror!void {
     defer instance.deinit();
 
     instance.open(.{ .base = true });
-    instance.pushFunction(lua.wrap(registerAsset));
-    instance.setGlobal("registerAsset");
-    instance.pushFunction(lua.wrap(registerHandler));
-    instance.setGlobal("registerHandler");
-    instance.pushFunction(lua.wrap(registerBlock));
-    instance.setGlobal("registerBlock");
-    instance.pushFunction(lua.wrap(registerStructure));
-    instance.setGlobal("registerStructure");
+    instance.register("registerAsset", lua.wrap(registerAsset));
+    instance.register("registerHandler", lua.wrap(registerHandler));
+    instance.register("registerBlock", lua.wrap(registerBlock));
+    instance.register("registerStructure", lua.wrap(registerStructure));
 
     try instance.doFile("assets/core/asset.lua");
 
